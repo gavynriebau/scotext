@@ -1,0 +1,6 @@
+[package]
+name = "scotext"
+version = "0.1.0"
+authors = ["gavyn <gavyn.riebau@gmail.com>"]
+
+[dependencies]

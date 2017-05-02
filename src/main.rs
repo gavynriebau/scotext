@@ -2,8 +2,9 @@
 extern crate clap;
 
 use std::collections::HashMap;
-use std::io::Read;
+use std::io::{Read, BufReader, BufRead};
 use clap::{App, Arg};
+use std::fs::File;
 
 fn main() {
 
@@ -16,9 +17,14 @@ fn main() {
              .long("verbose")
              .short("v")
              .takes_value(false))
+        .arg(Arg::with_name("dictionary")
+             .help("Path to a dictionary file with english language words. If one of the words in the dictionary is found in the input, the text score will be increased.")
+             .long("dictionary")
+             .short("w")
+             .value_name("dictionary"))
         .get_matches();
 
-    let mut character_scores = get_char_score_map();
+    let character_scores = get_char_score_map();
     let mut score = 0.0;
     let mut stdin = std::io::stdin();
     let mut buffer = String::new();
@@ -30,6 +36,7 @@ fn main() {
         println!("Read input: {}", input);
     }
 
+    // Iterate each character and increment "score" by the frequency score for that character.
     for c in input.chars() {
         if character_scores.contains_key(&c) {
             let char_score = character_scores.get(&c).unwrap();
@@ -40,6 +47,29 @@ fn main() {
         }
     }
 
+    // Check if each word in the provided dictionary is present.
+    if matches.is_present("dictionary") {
+        let path = matches.value_of("dictionary").unwrap();
+        match File::open(path) {
+            Ok(file) => {
+                let reader = BufReader::new(file);
+
+                for line in reader.lines() {
+                    let word = line.unwrap().to_lowercase();
+                    if input.contains(word.as_str()) {
+                        if matches.is_present("verbose") {
+                            println!("Matched word: {}", word);
+                        }
+                        score = score + 30.0;
+                    }
+                }
+            },
+            Err(err) => {
+                println!("Failed to open dictionary file '{}' because: {:?}", path, err);
+            }
+        }
+    }
+
     if matches.is_present("verbose") {
         println!("Character score was: {}", score);
     } else {
@@ -47,6 +77,9 @@ fn main() {
     }
 }
 
+// Creates a dictionary where:
+// key      - character
+// value    - frequency score
 fn get_char_score_map() -> HashMap<char, f32> {
     let mut character_scores = HashMap::new();
 
@@ -79,3 +112,4 @@ fn get_char_score_map() -> HashMap<char, f32> {
 
     character_scores
 }
+

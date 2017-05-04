@@ -52,15 +52,40 @@ fn main() {
         let path = matches.value_of("dictionary").unwrap();
         match File::open(path) {
             Ok(file) => {
-                let reader = BufReader::new(file);
+                // Will hold all the words in the dictionary file.
+                let mut dictionary_lines : Vec<String> = Vec::new();
 
+                // Read all the words and push them to the dictionary vector.
+                let reader = BufReader::new(file);
                 for line in reader.lines() {
                     let word = line.unwrap().to_lowercase();
-                    if input.contains(word.as_str()) {
+                    dictionary_lines.push(word);
+                }
+
+                // Sort the dictionary in order of word length, largest words to smallest words.
+                dictionary_lines.sort_by(|a, b| {
+                    let x = a.len();
+                    let y = b.len();
+
+                    y.cmp(&x)
+                });
+
+                // Check if the input contains a word from the dictionary.
+                // Each time a word is matched it's removed from the input so there isn't double
+                // counting of words.
+                //
+                // For each word the score is increased by 3 * e ^ word_length.
+                // In this way large words contribute exponentially more to the overall score.
+                let mut cloned_input = input.clone();
+                for word in dictionary_lines {
+                    if cloned_input.contains(word.as_str()) {
                         if matches.is_present("verbose") {
                             println!("Matched word: {}", word);
                         }
-                        score = score + 30.0;
+                        let adjustment = 3.0 * (word.len() as f32).exp();
+                        score = score + adjustment;
+
+                        cloned_input = cloned_input.replacen(word.as_str(), "", 1);
                     }
                 }
             },

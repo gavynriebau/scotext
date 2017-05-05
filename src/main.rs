@@ -9,7 +9,7 @@ use std::fs::File;
 fn main() {
 
     let matches = App::new("scotext")
-        .version("0.1.0")
+        .version("0.1.1")
         .about("Scores input based on english language character frequency")
         .author("Gavyn Riebau")
         .arg(Arg::with_name("verbose")

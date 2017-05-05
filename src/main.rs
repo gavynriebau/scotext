@@ -2,7 +2,7 @@
 extern crate clap;
 
 use std::collections::HashMap;
-use std::io::{Read, BufReader, BufRead};
+use std::io::{Read, BufReader};
 use clap::{App, Arg};
 use std::fs::File;
 
@@ -56,9 +56,12 @@ fn main() {
                 let mut dictionary_lines : Vec<String> = Vec::new();
 
                 // Read all the words and push them to the dictionary vector.
-                let reader = BufReader::new(file);
-                for line in reader.lines() {
-                    let word = line.unwrap().to_lowercase();
+                let mut reader = BufReader::new(file);
+                let mut dictionary_data = String::new();
+                let _ = reader.read_to_string(&mut dictionary_data);
+
+                for line in dictionary_data.lines() {
+                    let word = line.to_lowercase();
                     dictionary_lines.push(word);
                 }
 
@@ -98,7 +101,7 @@ fn main() {
     if matches.is_present("verbose") {
         println!("Character score was: {}", score);
     } else {
-        println!("{}", score);
+        println!("{:>8.2}", score);
     }
 }
 

@@ -4,6 +4,8 @@ version = "0.1.0"
 authors = ["gavyn <gavyn.riebau@gmail.com>"]
 description = "CLI app to score input according to how likely it is it contains english text"
 license = "MIT"
+homepage = "https://github.com/gavynriebau/scotext"
+repository = "https://github.com/gavynriebau/scotext"
 
 [dependencies]
 clap = "2.23.3"

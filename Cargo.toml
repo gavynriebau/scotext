@@ -1,12 +1,21 @@
 [package]
 name = "scotext"
-version = "0.1.1"
+version = "0.3.0"
 authors = ["gavyn <gavyn.riebau@gmail.com>"]
 description = "CLI app to score input according to how likely it is it contains english text"
 license = "MIT"
 homepage = "https://github.com/gavynriebau/scotext"
 repository = "https://github.com/gavynriebau/scotext"
 
+[lib]
+name = "score_text"
+path = "src/lib.rs"
+
+[[bin]]
+name = "scotext"
+path = "src/main.rs"
+
 [dependencies]
 clap = "2.23.3"
-
+log = "0.3.7"
+env_logger = "0.4.2"

@@ -1,6 +1,6 @@
 
 extern crate clap;
-extern crate score_text;
+extern crate xor_utils;
 
 #[macro_use]
 extern crate log;
@@ -9,13 +9,14 @@ extern crate env_logger;
 use std::io::Read;
 use clap::{App, Arg, ArgMatches};
 use std::fs::File;
+use xor_utils::{Score, ScoreAgainstDictionary};
 
 fn main() {
 
     env_logger::init().unwrap();
 
     let matches = App::new("scotext")
-        .version("0.3.0")
+        .version("0.4.0")
         .about("Scores input based on english language character frequency.")
         .author("Gavyn Riebau")
         .arg(Arg::with_name("dictionary")
@@ -36,18 +37,13 @@ fn main() {
     trace!("Read input: {}", input);
 
     // Iterate each character and increment "score" by the frequency score for that character.
-    for c in input.chars() {
-        let char_score = score_text::score_character(c);
-        trace!("Char: {} - {}", c, char_score);
-        score = score + char_score;
-    }
+    score = score + input.score();
 
     // Check if each word in the provided dictionary is present.
     if matches.is_present("dictionary") {
         let path = matches.value_of("dictionary").unwrap();
-        let dictionary = score_text::load_dictionary(path);
-        let word_score = score_text::score_words(input, dictionary);
-        score = score + word_score;
+        let dictionary = xor_utils::load_words_list(path);
+        score = score + input.score_with_words(dictionary);
     }
 
     debug!("Character score was: {}", score);

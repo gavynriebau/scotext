@@ -16,7 +16,7 @@ fn main() {
     env_logger::init().unwrap();
 
     let matches = App::new("scotext")
-        .version("0.4.0")
+        .version("0.5.0")
         .about("Scores input based on english language character frequency.")
         .author("Gavyn Riebau")
         .arg(Arg::with_name("dictionary")
@@ -47,7 +47,7 @@ fn main() {
     }
 
     debug!("Character score was: {}", score);
-    println!("{:>8.2}", score);
+    println!("{:>8.8}", score);
 }
 
 fn read_input(matches : &ArgMatches) -> String {
